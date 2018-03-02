@@ -1,0 +1,28 @@
+{
+  "name": "fun-sj",
+  "version": "0.0.0",
+  "description": "Just some random functions",
+  "author": "Martin Hövre <martin.hovre@opencubes.io>",
+  "main": "index.js",
+  "license": "MIT",
+  "repository": "ocpu/fun-sj",
+  "bugs": "https://github.com/ocpu/fun-sj/issues",
+  "homepage": "https://github.com/ocpu/fun-sj#readme",
+  "devDependencies": {
+    "jest": "^22.4.2"
+  },
+  "scripts": {
+    "test": "jest test/**/*.test.js",
+    "watch": "jest test/**/*.test.js --watch"
+  },
+  "keywords": [
+    "function",
+    "functions",
+    "random",
+    "pick",
+    "chain",
+    "defaults",
+    "range",
+    "test"
+  ]
+}
