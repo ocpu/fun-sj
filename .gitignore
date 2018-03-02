@@ -1,3 +1,4 @@
 node_modules/
 me.ys
-test*.js
+testing.js
+testSocket.js

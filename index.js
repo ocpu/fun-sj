@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * Get a random float between `[start]` and `[end]`.
  * Omit end and get a value between 0 and `[start]`.
@@ -36,6 +35,8 @@ function* range(start, end) {
 }
 
 /**
+ * Chain functions from a value.
+ * 
  * @template T,R
  * @param {T} value 
  * @param {...((value: T) => R|Promise<R>)} fn 
@@ -45,8 +46,23 @@ const chain = async(value, ...fn) => !fn.length
   ? value
   : chain(Promise.resolve(fn.shift().call(null, await value)), ...fn)
 
+/**
+ * Pick a value from a object.
+ * 
+ * @param {string} key The key to pick from a object
+ * @param {*} obj Any object to get picked on
+ * @returns {(any|(obj: any) => any)}
+ */
 const pick = (key, obj) => typeof obj !== 'undefined' ? obj[key] : obj => obj[key]
 
+/**
+ * Try something as an expression
+ * 
+ * @template T,R
+ * @param {() => T} test Some thing to try
+ * @param {(error: Error) => R} [failure] What to do on failure
+ * @returns {T | R} Either the normal value or the failure value
+ */
 const test = (test, failure) => {
   let value
   try {
@@ -57,6 +73,14 @@ const test = (test, failure) => {
   return value
 }
 
+/**
+ * Sets default values
+ * 
+ * @template T
+ * @param {Object} actual The actual values
+ * @param {Object} defaults The default values
+ * @param {(options: Object) => T} [fn] A function to run after the defaults assignment.
+ */
 const defaults = (actual={}, defaults={}, fn) => {
   Object.keys(defaults).forEach(key => {
     if (!(key in actual) || typeof actual[key] === 'undefined')
