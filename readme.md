@@ -58,7 +58,7 @@ Try something as an expression.
 
 ### defaults(actual: A, defaults: D)
 
-1. `defaults<A, D>(actual: A, defaults: D)`
+1. `defaults<A, D>(actual: A, defaults: D): A & D`
 2. `defaults<A, D, R>(actual: A, defaults: D, fn: (opts: A & D) => R): R`
 
 - `actual` The actual values

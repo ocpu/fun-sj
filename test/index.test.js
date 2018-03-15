@@ -88,16 +88,16 @@ it('makes a try/catch a expression', () => {
 
 it('default a object', () => {
   let actual = { hello: 'World' }
-  F.defaults(
+  const ret = F.defaults(
     actual,
     { hello: 'Me', make: 2 }
   )
-  expect(actual).toMatchObject({ hello: 'World', make: 2 })
+  expect(ret).toMatchObject({ hello: 'World', make: 2 })
   F.defaults(
     { hello: 'World' },
     { hello: 'Me', make: 2 },
-    actual => {
-      expect(actual).toMatchObject({ hello: 'World', make: 2 })
+    ret => {
+      expect(ret).toMatchObject({ hello: 'World', make: 2 })
     }
   )
 })

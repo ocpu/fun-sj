@@ -107,7 +107,7 @@ declare var random: {
    * @param actual The actual values
    * @param defaults The default values
    */
-  defaults<A, D>(actual: A, defaults: D)
+  defaults<A, D>(actual: A, defaults: D): A & D
   /**
    * Sets default values
    * 

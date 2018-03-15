@@ -76,17 +76,17 @@ const test = (test, failure) => {
 /**
  * Sets default values
  * 
- * @template T
- * @param {Object} actual The actual values
- * @param {Object} defaults The default values
- * @param {(options: Object) => T} [fn] A function to run after the defaults assignment.
+ * @template A, D, R
+ * @param {A} actual The actual values
+ * @param {D} defaults The default values
+ * @param {(options: A & D) => R} [fn] A function to run after the defaults assignment.
+ * @returns {(A & D|R)}
  */
 const defaults = (actual={}, defaults={}, fn) => {
-  Object.keys(defaults).forEach(key => {
-    if (!(key in actual) || typeof actual[key] === 'undefined')
-      actual[key] = defaults[key]
-  })
-  return fn && fn(actual)
+  const obj = Object.assign({}, defaults, actual)
+  return typeof fn === 'function'
+    ? fn(obj)
+    : obj
 }
 
 module.exports = {
