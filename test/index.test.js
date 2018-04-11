@@ -45,15 +45,26 @@ it('creates a range of numbers with no lower bound', () => {
   }
 })
 
-it('chain functions', done => {
+it('chain functions', () => {
   const value = "Make me"
   const toLowerCase = value => value.toLowerCase()
-  F.chain(
+  
+  expect(
+    F.chain(
+      value,
+      toLowerCase
+    )
+  ).toBe(value.toLowerCase())
+})
+
+it('chain asynchronously functions', () => {
+  const value = "Make me"
+  const toLowerCase = value => value.toLowerCase()
+
+  return F.chainAsync(
     value,
     toLowerCase,
-    val => expect(val).toBe(value.toLowerCase()),
-    () => void 0,
-    done
+    val => expect(val).toBe(value.toLowerCase())
   )
 })
 
@@ -90,9 +101,9 @@ it('default a object', () => {
   let actual = { hello: 'World' }
   const ret = F.defaults(
     actual,
-    { hello: 'Me', make: 2 }
+    { hello: 'Me', make: 1 }
   )
-  expect(ret).toMatchObject({ hello: 'World', make: 2 })
+  expect(ret).toMatchObject({ hello: 'World', make: 1 })
   F.defaults(
     { hello: 'World' },
     { hello: 'Me', make: 2 },
@@ -100,4 +111,59 @@ it('default a object', () => {
       expect(ret).toMatchObject({ hello: 'World', make: 2 })
     }
   )
+})
+
+it('extracts object values', () => {
+  const user = { id: '7', name: 'Unknown', services: ['Steam'] }
+  const nameServices = F.extract('name', 'services')
+
+  const extract = nameServices(user)
+  expect(extract).toEqual({
+    name: 'Unknown',
+    services: ['Steam']
+  })
+})
+
+it('transforms a array', () => {
+  const usernames = [
+    { id: '0', name: 'My cat', services: [] },
+    { id: '1', name: 'rufus', services: [] },
+    { id: '2', name: 'fudi', services: ['League of Legends'] },
+    { id: '3', name: 'Shadows Warrior', services: ['League of Legends', 'Steam'] },
+    { id: '4', name: 'Blank', services: ['League of Legends'] },
+    { id: '5', name: 'cpus', services: ['Steam'] },
+    { id: '6', name: 'Mals', services: ['Steam'] },
+    { id: '7', name: 'Unknown', services: ['Steam'] },
+  ]
+  const transformToNames = F.transform(F.pick('name'))
+  const names = transformToNames(usernames)
+  expect(names).toEqual(['My cat', 'rufus', 'fudi', 'Shadows Warrior', 'Blank', 'cpus', 'Mals', 'Unknown'])
+})
+
+it('transforms a object', () => {
+  const obj = {
+    id: "dfvs",
+    name: 'vdvsd'
+  }
+  const transformToUppercase = F.transform(value => value.toUpperCase())
+  const newObj = transformToUppercase(obj)
+  expect(newObj).toEqual({ id: 'DFVS', name: 'VDVSD' })
+})
+
+it('can call a function', () => {
+  const obj = {
+    fn: () => 'I am a result'
+  }
+  const callFunctionNamedFN = F.call('fn')
+  const res = callFunctionNamedFN(obj)
+  expect(res).toBe('I am a result')
+})
+
+it('can call a function with args', () => {
+  const obj = {
+    fn: () => 'I am a result'
+  }
+  const callFunctionNamedFN = F.call('fn')
+  const res = callFunctionNamedFN(obj)
+  expect(res).toBe('I am a result')
 })

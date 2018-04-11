@@ -6,7 +6,7 @@
  * @param {number} [end] Exclusive end
  * @returns {number} A random number between `[start]` and `[end]`
  */
-const randomFloat = (start, end) =>
+module.exports.randomFloat = (start, end) =>
   (end !== void 0 ? start : 0) + Math.random() * (end !== void 0 ? end - start : start)
 
 /**
@@ -17,7 +17,7 @@ const randomFloat = (start, end) =>
  * @param {number} [end] Exclusive end
  * @returns {number} A random number between [start] and [end]
  */
-const randomInt = (start, end) => Math.floor(randomFloat(start, end))
+module.exports.randomInt = (start, end) => Math.floor(module.exports.randomFloat(start, end))
 
 /**
  * Get a range of numbers between `[start]` and `[end]`.
@@ -27,7 +27,7 @@ const randomInt = (start, end) => Math.floor(randomFloat(start, end))
  * @param {number} [end] Exclusive end
  * @yields {number} A number in range
  */
-function* range(start, end) {
+module.exports.range = function* range(start, end) {
   const s = (end !== void 0 ? start : 0)
   const e = (end !== void 0 ? end : start)
   for (let i = s; i < e; i++)
@@ -42,9 +42,21 @@ function* range(start, end) {
  * @param {...((value: T) => R|Promise<R>)} fn 
  * @returns {Promise<R>}
  */
-const chain = async(value, ...fn) => !fn.length
+module.exports.chain = (value, ...fn) => !fn.length
   ? value
-  : chain(Promise.resolve(fn.shift().call(null, await value)), ...fn)
+  : module.exports.chain(fn.shift().call(null, value), ...fn)
+
+/**
+ * Chain functions from a value.
+ * 
+ * @template T,R
+ * @param {T} value 
+ * @param {...((value: T) => R|Promise<R>)} fn 
+ * @returns {Promise<R>}
+ */
+module.exports.chainAsync = async(value, ...fn) => !fn.length
+  ? value
+  : module.exports.chainAsync(Promise.resolve(fn.shift().call(null, await value)), ...fn)
 
 /**
  * Pick a value from a object.
@@ -53,7 +65,7 @@ const chain = async(value, ...fn) => !fn.length
  * @param {*} obj Any object to get picked on
  * @returns {(any|(obj: any) => any)}
  */
-const pick = (key, obj) => typeof obj !== 'undefined' ? obj[key] : obj => obj[key]
+module.exports.pick = (key, obj) => typeof obj !== 'undefined' ? obj[key] : obj => obj[key]
 
 /**
  * Try something as an expression
@@ -63,7 +75,7 @@ const pick = (key, obj) => typeof obj !== 'undefined' ? obj[key] : obj => obj[ke
  * @param {(error: Error) => R} [failure] What to do on failure
  * @returns {T | R} Either the normal value or the failure value
  */
-const test = (test, failure) => {
+module.exports.test = (test, failure) => {
   let value
   try {
     value = test()
@@ -82,19 +94,22 @@ const test = (test, failure) => {
  * @param {(options: A & D) => R} [fn] A function to run after the defaults assignment.
  * @returns {(A & D|R)}
  */
-const defaults = (actual={}, defaults={}, fn) => {
+module.exports.defaults = (actual={}, defaults={}, fn) => {
   const obj = Object.assign({}, defaults, actual)
   return typeof fn === 'function'
     ? fn(obj)
     : obj
 }
 
-module.exports = {
-  randomFloat,
-  randomInt,
-  range,
-  chain,
-  pick,
-  test,
-  defaults
-}
+module.exports.extract = (...keys) => obj => keys.reduce((extract, key) => {extract[key] = obj[key];return extract}, {})
+module.exports.transform = transformer => obj => 
+  Array.isArray(obj)
+    ? obj.map(transformer)
+    : Object.getOwnPropertyNames(obj).reduce((res, key) => {res[key] = transformer(obj[key], key, obj);return res}, {})
+
+/**
+ * @template K,O
+ * @param {K} key 
+ * @returns {(obj: O, args: ...any[]) => O[K]}
+ */
+module.exports.call = (key, ...args) => (obj) => obj[key](...args)
